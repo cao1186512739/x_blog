@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xblog.mapper.RoleMapper">
+  <resultMap id="BaseResultMap" type="com.xblog.core.model.po.Role">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    <result column="role_des" jdbcType="VARCHAR" property="roleDes" />
+  </resultMap>
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from role
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertRole" parameterType="com.xblog.core.model.po.Role">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into role (role_name, role_des)
+    values (#{roleName,jdbcType=VARCHAR}, #{roleDes,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateById" parameterType="com.xblog.core.model.po.Role">
+    update role
+    set role_name = #{roleName,jdbcType=VARCHAR},
+      role_des = #{roleDes,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, role_name, role_des
+    from role
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAllList" resultMap="BaseResultMap">
+    select id, role_name, role_des
+    from role
+  </select>
+</mapper>

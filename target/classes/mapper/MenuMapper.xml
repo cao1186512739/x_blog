@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xblog.mapper.MenuMapper">
+
+  <resultMap id="BaseResultMap" type="com.xblog.core.model.po.Menu">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="menu_path" jdbcType="VARCHAR" property="menuPath" />
+    <result column="menu_des" jdbcType="VARCHAR" property="menuDes" />
+    <result column="icons" jdbcType="VARCHAR" property="icons" />
+    <result column="is_auth" jdbcType="BIT" property="isAuth" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="enabled" jdbcType="BIT" property="enabled" />
+  </resultMap>
+
+  <sql id="Base_column_list">
+    id, menu_name, menu_path, menu_des, icons, is_auth, parent_id, enabled
+  </sql>
+
+  <select id="selectMenus" parameterType="String" resultMap="BaseResultMap">
+    SELECT <include refid="Base_column_list"/>
+    FROM menu where id IN (
+      SELECT menu_id FROM menu_role WHERE role_id IN (
+        SELECT role_id FROM `user` u LEFT JOIN user_role ur ON u.id = ur.user_id WHERE u.username = #{username}
+      )
+    )
+  </select>
+
+  <delete id="deleteById" parameterType="java.lang.Integer">
+    delete from menu
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insertMenu" parameterType="com.xblog.core.model.po.Menu">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into menu (menu_name, menu_path, menu_des, 
+      icons, is_auth, parent_id, 
+      enabled)
+    values (#{menuName,jdbcType=VARCHAR}, #{menuPath,jdbcType=VARCHAR}, #{menuDes,jdbcType=VARCHAR}, 
+      #{icons,jdbcType=VARCHAR}, #{isAuth,jdbcType=BIT}, #{parentId,jdbcType=INTEGER}, 
+      #{enabled,jdbcType=BIT})
+  </insert>
+
+  <update id="updateById" parameterType="com.xblog.core.model.po.Menu">
+    update menu
+    set menu_name = #{menuName,jdbcType=VARCHAR},
+      menu_path = #{menuPath,jdbcType=VARCHAR},
+      menu_des = #{menuDes,jdbcType=VARCHAR},
+      icons = #{icons,jdbcType=VARCHAR},
+      is_auth = #{isAuth,jdbcType=BIT},
+      parent_id = #{parentId,jdbcType=INTEGER},
+      enabled = #{enabled,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, menu_name, menu_path, menu_des, icons, is_auth, parent_id, enabled
+    from menu
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectMenuList" resultMap="BaseResultMap">
+    select id, menu_name, menu_path, menu_des, icons, is_auth, parent_id, enabled
+    from menu
+  </select>
+</mapper>
