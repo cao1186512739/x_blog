@@ -78,7 +78,7 @@ public class UserServiceImpl extends BaseService implements UserService {
         //生成为空key
         String key = username+PublicConstant.MENU_KEY;
         List<Menu> menus = (List<Menu>) redisComponent.getForListAll(key);
-        if (menus.isEmpty() || null == menus){
+        if (null == menus || menus.isEmpty()){
             menus = menuMapper.selectMenus(username);
             if (redisComponent.hasKey(key)) {
                 redisComponent.del(key);

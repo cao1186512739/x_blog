@@ -1,5 +1,7 @@
 package com.xblog.interceptor;
 
+import com.xblog.core.common.CheckUserAgent;
+import com.xblog.core.common.OnlyAccess;
 import com.xblog.core.exception.AuthException;
 import com.xblog.core.exception.LoginException;
 import com.xblog.core.model.constant.PublicConstant;
@@ -39,7 +41,8 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
         // 获取Token令牌，检查用户是否登录
-        String token = CookieUtil.getValue(request, PublicConstant.LOGIN_IDENTITY_KEY);
+        String token = CookieUtil.
+                getValue(request, PublicConstant.LOGIN_IDENTITY_KEY);
         if (StringUtil.isBlank(token)) {
             throw new LoginException(PublicConstant.UNAUTHO_ERROR);
         }
@@ -49,6 +52,9 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (StringUtil.isNull(userDto)){
             throw new LoginException(PublicConstant.INVALID_TOKEN);
         }
+        //如果当前已经有人登入，再有人进来就则把之前的用户挤出去
+       // OnlyAccess.push(request,response,username);
+
         // 权限校验
         if (!hasPermission(username, request.getRequestURI())) {
             throw new AuthException(PublicConstant.USER_NO_PERMITION);
